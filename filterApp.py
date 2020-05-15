@@ -16,7 +16,6 @@ df[['End_Date', 'End_Time']] = df['End_Time'].str.split(' ', n=1, expand=True)
 
 df['End_Date'] = pd.to_datetime(df['End_Time'])
 
-
 df['Start_Year'] = df['Start_Date'].apply(lambda date: date.year)
 df['Start_Month'] = df['Start_Date'].apply(lambda date: date.month)
 df['Start_Day'] = df['Start_Date'].apply(lambda date: date.day)
