@@ -20,10 +20,13 @@ df['Start_Year'] = df['Start_Date'].apply(lambda date: date.year)
 df['Start_Month'] = df['Start_Date'].apply(lambda date: date.month)
 df['Start_Day'] = df['Start_Date'].apply(lambda date: date.day)
 
+#drop tables < 2019
 df.drop(df[df['Start_Year'] < 2019].index, inplace = True)
 
-df['Difference'] = (df['End_Date'] - df['Start_Date'])
+#get the fifference in start date and end date in munutes. Mote: Starts a a timedelta64 type
+df['Difference'] = (df['End_Date'] - df['Start_Date']).astype(str).str[-15:-13]
 
+#drop unused tables
 df.drop(['Start_Date'], axis=1,inplace=True)
 df.drop(['End_Date'], axis=1,inplace=True)
 
