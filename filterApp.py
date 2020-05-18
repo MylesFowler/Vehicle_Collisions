@@ -3,31 +3,33 @@ import numpy as np
 import time
 import datetime
 
-
 df = pd.read_csv('/Users/Mike_F/Desktop/US_Accidents_Dec19.csv')
 
 df.drop(['TMC','Description','Country','Timezone','Airport_Code','Weather_Timestamp','Traffic_Calming','Traffic_Signal','Turning_Loop','Amenity','Bump','Crossing','Give_Way','Junction','No_Exit','Railway','Roundabout','Station','Stop','ID','Wind_Speed(mph)','Precipitation(in)','Visibility(mi)','Wind_Chill(F)','End_Lat','End_Lng'], axis = 1, inplace = True)
+#df['Start_Time'].astype(str).str[-5:-5]
+df[['Start_Date', 'Start(time)']] = df['Start_Time'].str.split(' ', n=1, expand=True)
 
-df[['Start_Date', 'Start_Time']] = df['Start_Time'].str.split(' ', n=1, expand=True)
+df['Start_Date'] =  pd.to_datetime(df['Start_Time'])
 
-df['Start_Date'] = pd.to_datetime(df['Start_Time'])
-
-df[['End_Date', 'End_Time']] = df['End_Time'].str.split(' ', n=1, expand=True)
+df[['End_Date', 'End(time)']] = df['End_Time'].str.split(' ', n=1, expand=True)
 
 df['End_Date'] = pd.to_datetime(df['End_Time'])
 
-df['Start_Year'] = df['Start_Date'].apply(lambda date: date.year)
-df['Start_Month'] = df['Start_Date'].apply(lambda date: date.month)
-df['Start_Day'] = df['Start_Date'].apply(lambda date: date.day)
-
-#drop tables < 2019
-df.drop(df[df['Start_Year'] < 2019].index, inplace = True)
-
-#get the fifference in start date and end date in munutes. Mote: Starts a a timedelta64 type
 df['Difference'] = (df['End_Date'] - df['Start_Date']).astype(str).str[-15:-13]
 
-#drop unused tables
-df.drop(['Start_Date'], axis=1,inplace=True)
-df.drop(['End_Date'], axis=1,inplace=True)
+df['Start_year'] = df['Start_Date'].dt.year
+df['Start_month'] = df['Start_Date'].dt.month
+df['Start_day'] = df['Start_Date'].dt.day
 
-pd.DataFrame.to_csv(df,"" + time.strftime('Ticket %Y-%m-%d') + ".csv",',')
+#drop tables < 2019
+df.drop(df[df['Start_year'] < 2018].index, inplace = True)
+
+df.drop(df[df['City'] != 'Los Angeles'].index, inplace = True)
+
+#drop unused tables
+df.drop(['Start_Time','End_Time','Start_Date','End_Date'], axis=1,inplace=True)
+
+print(df.corr())
+pd.DataFrame.to_csv(df,"" + time.strftime('%Y-%m-%d') + ".csv",',')
+
+#https://www.kaggle.com/sobhanmoosavi/us-accidents
